@@ -4,15 +4,20 @@ import pygame
 class Ball(pygame.sprite.Sprite):
   def __init__(self, color, width, height):
     super().__init__()
+    self.width = width
+    self.height = height
+    
     self.image = pygame.Surface([width, height])
     pygame.draw.rect(self.image, color, [0, 0, width, height])
-    self.velocity = [randint(4,8), randint(-8,-8)]
     self.rect = self.image.get_rect()
+
+    self.vX = randint(6, 8)
+    self.vY = randint(-8, 8)
   
   def update(self):
-    self.rect.x += self.velocity[0]
-    self.rect.y += self.velocity[1]
+    self.rect.x += self.vX
+    self.rect.y += self.vY
   
   def bounce(self):
-    self.velocity[0] = -self.velocity[0]
-    self.velocity[1] = randint(-8,8)
+    self.vX = -self.vX
+    self.vY = randint(-8, 8)

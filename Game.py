@@ -18,12 +18,12 @@ class Game:
     self.running = False
     
   def run(self):
+    self._ball.update()
     self._processUserInputs()
     self._checkCollisions()
     self._updateScores()
 
     self._sprites.draw(self._screen)
-    self._sprites.update() # Allow sprites to move
     pygame.display.flip() # Update the entire screen
     self._clock.tick(60) # Limit game speed to 60 fps
 
@@ -33,32 +33,40 @@ class Game:
         self.running = False
 
   def _checkCollisions(self):
-    if self._ball.rect.x >= 690:
+    # Ball hits right wall
+    if self._ball.rect.x >= WindowAttributes.WIDTH - self._ball.width:
       self._score1 += 1
-      self._ball.velocity[0] = -self._ball.velocity[0]
+      self._ball.vX = -self._ball.vX
+    
+    # Ball hits left wall
     if self._ball.rect.x <= 0:
       self._score2 += 1
-      self._ball.velocity[0] = -self._ball.velocity[0]
-    if self._ball.rect.y > 490:
-      self._ball.velocity[1] = -self._ball.velocity[1]
+      self._ball.vX = -self._ball.vX
+    
+    # Ball reaches ground
+    if self._ball.rect.y > WindowAttributes.HEIGHT - self._ball.height:
+      self._ball.vY = -self._ball.vY
+    
+    # Ball reaches ceiling
     if self._ball.rect.y < 0:
-      self._ball.velocity[1] = -self._ball.velocity[1]
+      self._ball.vY = -self._ball.vY
 
+    # Ball collides with paddle
     if pygame.sprite.collide_mask(self._ball, self._paddle1) or pygame.sprite.collide_mask(self._ball, self._paddle2):
       self._ball.bounce()
 
   def _createSprites(self):
     self._paddle1 = Paddle(Colors.WHITE, width=10, height=100)
     self._paddle1.rect.x = 20
-    self._paddle1.rect.y = 200
+    self._paddle1.rect.y = WindowAttributes.HEIGHT // 2 - self._paddle1.height // 2
 
     self._paddle2 = Paddle(Colors.WHITE, width=10, height=100)
-    self._paddle2.rect.x = 670
-    self._paddle2.rect.y = 200
+    self._paddle2.rect.x = WindowAttributes.WIDTH - self._paddle2.width - self._paddle1.rect.x
+    self._paddle2.rect.y = WindowAttributes.HEIGHT // 2 - self._paddle1.height // 2
 
     self._ball = Ball(Colors.WHITE, 10, 10)
-    self._ball.rect.x = 345
-    self._ball.rect.y = 195
+    self._ball.rect.x = WindowAttributes.WIDTH // 2 - self._ball.width // 2
+    self._ball.rect.y = WindowAttributes.HEIGHT // 2 - self._ball.height // 2
 
     self._sprites = pygame.sprite.Group()
     self._sprites.add(self._paddle1)
