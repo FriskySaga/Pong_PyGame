@@ -27,7 +27,10 @@ class Game:
     pygame.display.flip() # Update the entire screen
     self._clock.tick(60) # Limit game speed to 60 fps
 
-  def _awaitUserQuit(self):
+  def _awaitUserQuit(self, keys):
+    if keys[pygame.K_ESCAPE]:
+      self.running = False
+    
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         self.running = False
@@ -52,7 +55,7 @@ class Game:
       self._ball.vY = -self._ball.vY
 
     # Ball collides with paddle
-    if pygame.sprite.collide_mask(self._ball, self._paddle1) or pygame.sprite.collide_mask(self._ball, self._paddle2):
+    if pygame.sprite.collide_rect(self._ball, self._paddle1) or pygame.sprite.collide_rect(self._ball, self._paddle2):
       self._ball.bounce()
 
   def _createSprites(self):
@@ -82,7 +85,7 @@ class Game:
     keys = pygame.key.get_pressed()
     self._processUserMovement(keys)
 
-    self._awaitUserQuit()
+    self._awaitUserQuit(keys)
 
   def _processUserMovement(self, keys):
     if keys[pygame.K_w]:
