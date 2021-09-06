@@ -9,26 +9,23 @@ class Game:
     pygame.init()
     pygame.display.set_caption('Pong')
 
-    self.screen = pygame.display.set_mode(WindowAttributes.SIZE)
-    self.clock = pygame.time.Clock()
+    self._screen = pygame.display.set_mode(WindowAttributes.SIZE)
+    self._clock = pygame.time.Clock()
 
     self._createSprites()
+    self._initScores()
 
     self.running = False
-
-    self._initScores()
     
   def run(self):
     self._processUserInputs()
     self._checkCollisions()
     self._updateScores()
 
-    self.sprites.draw(self.screen)
-    self.sprites.update()
-    pygame.display.flip()
-
-    # Limit game speed to 60 fps
-    self.clock.tick(60)
+    self._sprites.draw(self._screen)
+    self._sprites.update() # Allow sprites to move
+    pygame.display.flip() # Update the entire screen
+    self._clock.tick(60) # Limit game speed to 60 fps
 
   def _awaitUserQuit(self):
     for event in pygame.event.get():
@@ -36,42 +33,42 @@ class Game:
         self.running = False
 
   def _checkCollisions(self):
-    if self.ball.rect.x >= 690:
-      self.score1 += 1
-      self.ball.velocity[0] = -self.ball.velocity[0]
-    if self.ball.rect.x <= 0:
-      self.score2 += 1
-      self.ball.velocity[0] = -self.ball.velocity[0]
-    if self.ball.rect.y > 490:
-      self.ball.velocity[1] = -self.ball.velocity[1]
-    if self.ball.rect.y < 0:
-      self.ball.velocity[1] = -self.ball.velocity[1]
+    if self._ball.rect.x >= 690:
+      self._score1 += 1
+      self._ball.velocity[0] = -self._ball.velocity[0]
+    if self._ball.rect.x <= 0:
+      self._score2 += 1
+      self._ball.velocity[0] = -self._ball.velocity[0]
+    if self._ball.rect.y > 490:
+      self._ball.velocity[1] = -self._ball.velocity[1]
+    if self._ball.rect.y < 0:
+      self._ball.velocity[1] = -self._ball.velocity[1]
 
-    if pygame.sprite.collide_mask(self.ball, self.paddle1) or pygame.sprite.collide_mask(self.ball, self.paddle2):
-      self.ball.bounce()
+    if pygame.sprite.collide_mask(self._ball, self._paddle1) or pygame.sprite.collide_mask(self._ball, self._paddle2):
+      self._ball.bounce()
 
   def _createSprites(self):
-    self.paddle1 = Paddle(Colors.WHITE, width=10, height=100)
-    self.paddle1.rect.x = 20
-    self.paddle1.rect.y = 200
+    self._paddle1 = Paddle(Colors.WHITE, width=10, height=100)
+    self._paddle1.rect.x = 20
+    self._paddle1.rect.y = 200
 
-    self.paddle2 = Paddle(Colors.WHITE, width=10, height=100)
-    self.paddle2.rect.x = 670
-    self.paddle2.rect.y = 200
+    self._paddle2 = Paddle(Colors.WHITE, width=10, height=100)
+    self._paddle2.rect.x = 670
+    self._paddle2.rect.y = 200
 
-    self.ball = Ball(Colors.WHITE, 10, 10)
-    self.ball.rect.x = 345
-    self.ball.rect.y = 195
+    self._ball = Ball(Colors.WHITE, 10, 10)
+    self._ball.rect.x = 345
+    self._ball.rect.y = 195
 
-    self.sprites = pygame.sprite.Group()
-    self.sprites.add(self.paddle1)
-    self.sprites.add(self.paddle2)
-    self.sprites.add(self.ball)
+    self._sprites = pygame.sprite.Group()
+    self._sprites.add(self._paddle1)
+    self._sprites.add(self._paddle2)
+    self._sprites.add(self._ball)
 
   def _initScores(self):
-    self.font = pygame.font.Font(None, 74)
-    self.score1 = 0
-    self.score2 = 0
+    self._font = pygame.font.Font(None, 74)
+    self._score1 = 0
+    self._score2 = 0
 
   def _processUserInputs(self):
     keys = pygame.key.get_pressed()
@@ -81,19 +78,19 @@ class Game:
 
   def _processUserMovement(self, keys):
     if keys[pygame.K_w]:
-      self.paddle1.moveUp(5)
+      self._paddle1.moveUp(5)
     if keys[pygame.K_s]:
-      self.paddle1.moveDown(5)
+      self._paddle1.moveDown(5)
     if keys[pygame.K_UP]:
-      self.paddle2.moveUp(5)
+      self._paddle2.moveUp(5)
     if keys[pygame.K_DOWN]:
-      self.paddle2.moveDown(5)
+      self._paddle2.moveDown(5)
     
     # Hide the old white paddle pixels
-    self.screen.fill(Colors.BLACK)
+    self._screen.fill(Colors.BLACK)
 
   def _updateScores(self):
-    text = self.font.render(str(self.score1), True, Colors.WHITE)
-    self.screen.blit(text, (250, 10))
-    text = self.font.render(str(self.score2), True, Colors.WHITE)
-    self.screen.blit(text, (420, 10))
+    text = self._font.render(str(self._score1), True, Colors.WHITE)
+    self._screen.blit(text, (250, 10))
+    text = self._font.render(str(self._score2), True, Colors.WHITE)
+    self._screen.blit(text, (420, 10))
